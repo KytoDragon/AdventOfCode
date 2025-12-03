@@ -1,28 +1,70 @@
 module utils;
 
-import util.Basic;
-import util.Strings : concat;
+import util.Basic : print;
+import util.Strings : concat, index_of, starts_with;
 import util.Varargs;
+import util.Files : get_filename_from_path;
 
 nothrow @nogc:
 
-enum HIGHLIGHT_START = "\x1b[32m";
-enum HIGHLIGHT_END = "\x1b[0m";
-
-void log_error(A...)(string year, string day, A a) {
+void log_error(A...)(int year, int day, A a) {
     mixin varargs!a;
-    return log_result(year, day, concat(va_args));
+    return log_error(year, day, concat(va_args));
 }
 
-void log_error(string year, string day, string message) {
+void log_error(int year, int day, string message) {
     print("Year ", year, " day ", day, " encountered an error: ", message, "\n");
 }
 
-void log_result(A...)(string year, string day, A a) {
+void log_result(A...)(int year, int day, string file, string format, A a) {
     mixin varargs!a;
-    return log_result(year, day, concat(va_args));
-}
+    string[6] day_colors = ["\x1b[31m", "\x1b[32m", "\x1b[33m", "\x1b[34m", "\x1b[35m", "\x1b[36m"];
+    print("Result for year \x1b[35m", year, "\x1b[0m day ", day_colors[day % 6], day, "\x1b[0m file ");
 
-void log_result(string year, string day, string result) {
-    print("Result for year ", year, " day ", day, ": ", result, "\n");
+    string filename = get_filename_from_path(file);
+    // example files are set to dim/faint
+    if (starts_with(filename, "example")) {
+        print("\x1b[2m", filename, "\x1b[0m");
+    } else {
+        print("\x1b[1m", filename, "\x1b[0m");
+    }
+    print(": ");
+
+    long last_format_index = 0;
+    long format_index = index_of(format, '%');
+    if (format_index < 0)
+        format_index = format.length;
+
+    int argument_index = 0;
+    while (format_index < format.length) {
+        print(format[last_format_index..format_index]);
+        last_format_index = format_index + 1;
+
+        if (format_index + 1 < format.length && format[format_index + 1] == '#') {
+            // red or green, depending on whether the result matched the expected value
+            bool result_matched = va_get_elem!bool(va_args, argument_index);
+            if (result_matched)
+                print("\x1b[32m");
+            else
+                print("\x1b[31m");
+            print(va_args.values[argument_index + 1]);
+            print("\x1b[0m");
+            argument_index += 2;
+            last_format_index += 1;
+
+        } else if (format_index + 1 < format.length && format[format_index + 1] == '%') {
+            print('%');
+            last_format_index += 1;
+
+        } else {
+            print(va_args.values[argument_index]);
+            argument_index += 1;
+        } 
+
+        format_index = index_of(format, last_format_index, '%');
+        if (format_index < 0)
+            format_index = format.length;
+    }
+    print(format[last_format_index..$]);
+    print("\n");
 }
