@@ -1,0 +1,12 @@
+## build artifacts
+*.exe
+*.dll
+*.pdb
+
+## Dub build directory
+/.dub
+dub.selections.json
+
+## VS Code settings
+/.vscode
+

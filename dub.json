@@ -1,0 +1,13 @@
+{
+    "name": "advent",
+    "sourcePaths": ["source"],
+    "lflags-windows-ldc": ["/entry:wmainCRTStartup", "/subsystem:windows"],
+    "lflags-posix-ldc": [],
+    "dflags-ldc": ["-mattr=+ssse3,+aes,+avx2", "-vgc", "--enable-cross-module-inlining=true", "--fno-delete-null-pointer-checks", "--fvisibility=hidden", "--enable-asserts=true", "--boundscheck=on"],
+    "dflags-windows-ldc": ["-link-internally"],
+	"libs-windows" : ["dbghelp"],
+	"versions": [],
+    "dependencies": {
+        "kyto_syslib:lite": {"path": "../KSysLib"}
+    },
+}
