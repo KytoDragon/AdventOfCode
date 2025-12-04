@@ -1,11 +1,15 @@
 module utils;
 
-import util.Basic : print;
+import util.Basic : print, u64;
 import util.Strings : concat, index_of, starts_with;
 import util.Varargs;
 import util.Files : get_filename_from_path;
+import util.Time : start_time_diff, time_diff_nanoseconds;
 
 nothrow @nogc:
+
+__gshared bool print_performance = false;
+__gshared u64 last_timestamp;
 
 void log_error(A...)(int year, int day, A a) {
     mixin varargs!a;
@@ -18,8 +22,8 @@ void log_error(int year, int day, string message) {
 
 void log_result(A...)(int year, int day, string file, string format, A a) {
     mixin varargs!a;
-    string[6] day_colors = ["\x1b[31m", "\x1b[32m", "\x1b[33m", "\x1b[34m", "\x1b[35m", "\x1b[36m"];
-    print("Result for year \x1b[35m", year, "\x1b[0m day ", day_colors[day % 6], day, "\x1b[0m file ");
+    string[6] colors = ["\x1b[31m", "\x1b[32m", "\x1b[33m", "\x1b[34m", "\x1b[35m", "\x1b[36m"];
+    print("Result for year ", colors[year % 6], year, "\x1b[0m day ", colors[day % 6], day, "\x1b[0m file ");
 
     string filename = get_filename_from_path(file);
     // example files are set to dim/faint
@@ -67,4 +71,11 @@ void log_result(A...)(int year, int day, string file, string format, A a) {
     }
     print(format[last_format_index..$]);
     print("\n");
+}
+
+void print_time(int day) {
+    if (day > 0 && print_performance)
+        print("Day ", day, " time: ", time_diff_nanoseconds(last_timestamp) / 1000, " µs\n");
+
+    last_timestamp = start_time_diff();
 }

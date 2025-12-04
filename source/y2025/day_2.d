@@ -1,8 +1,8 @@
 module y2025.day_2;
 
 import util.Basic : free, u64;
-import util.Strings : parse_integer, split, print_integer_fixed, index_of;
-import util.Files : read_entire_file, get_filename_from_path;
+import util.Strings : parse_integer, split, print_integer_fixed;
+import util.Files : read_entire_file;
 import util.Math : log10, pow;
 import util.file.FileReader;
 

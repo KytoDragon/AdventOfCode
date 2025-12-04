@@ -1,9 +1,7 @@
 module y2025.day_4;
 
-import util.Basic : free, u64;
-import util.Strings : parse_integer, split, print_integer_fixed;
-import util.Files : read_entire_file, get_filename_from_path;
-import util.Math : log10, pow;
+import util.Basic : free;
+import util.Files : read_entire_file;
 import util.file.FileReader;
 
 import utils;
@@ -56,7 +54,7 @@ int count_accessible_rolls(ubyte[] data) {
 int count_accessible_rolls_in_line(char[] first_line, char[] second_line, char[] third_line) {
     int num_accessible_rolls;
     for (int i = 0; i < second_line.length; i++) {
-        if (second_line[i] != '@')
+        if (second_line.ptr[i] != '@')
             continue;
 
         int num_neighbors = -1; // -1 because we count the roll itself
@@ -76,11 +74,11 @@ int count_accessible_rolls_in_line(char[] first_line, char[] second_line, char[]
 
 int get_neighbours_in_line(char[] line, int i) {
     int num_neighbours;
-    if (i > 0 && line[i - 1] != '.')
+    if (i > 0 && line.ptr[i - 1] != '.')
         num_neighbours += 1;
-    if (line[i] != '.')
+    if (line.ptr[i] != '.')
         num_neighbours += 1;
-    if (i < line.length - 1 && line[i + 1] != '.')
+    if (i < line.length - 1 && line.ptr[i + 1] != '.')
         num_neighbours += 1;
     return num_neighbours;
 }
@@ -88,8 +86,8 @@ int get_neighbours_in_line(char[] line, int i) {
 void remove_accessible_rolls(ubyte[] data) {
     
     for (int i = 0; i < data.length; i++) {
-        if (data[i] == 'x')
-            data[i] = '.';
+        if (data.ptr[i] == 'x')
+            data.ptr[i] = '.';
     }
 }
 
