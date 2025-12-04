@@ -88,19 +88,29 @@ u64 sum_invalid_id_fast(u64 first_id, u64 last_id) {
             range_end = last_id;
         
         // repeating patterns are always a multiple of 11, 101, 1001, 10001, etc.
-        u64 match_pattern = pow(10L, i / 2) + 1;
-
-        // clip range to multiples of the pattern
-        if (range_start % match_pattern != 0)
-            range_start += match_pattern - range_start % match_pattern;
-        range_end -= range_end % match_pattern;
-        if (range_end < range_start)
-            continue;
-
-        u64 num_multiples = (range_end - range_start) / match_pattern + 1;
-        sum_invalid_ids += range_start * num_multiples + ((num_multiples - 1) * num_multiples / 2) * match_pattern;
+        sum_invalid_ids += sum_invalid_id_in_range(range_start, range_end, i, 2);
     }
     
+    return sum_invalid_ids;
+}
+
+u64 sum_invalid_id_in_range(u64 range_start, u64 range_end, int pattern_length, int pattern_repeat_count) {
+    // build up the pattern
+    u64 match_pattern = 0;
+    for (int k = 0; k < pattern_repeat_count; k++) {
+        match_pattern = match_pattern * pow(10L, pattern_length / pattern_repeat_count) + 1;
+    }
+
+    // clip range to multiples of the pattern
+    if (range_start % match_pattern != 0)
+        range_start += match_pattern - range_start % match_pattern;
+    range_end -= range_end % match_pattern;
+    if (range_end < range_start)
+        return 0;
+
+    u64 num_multiples = (range_end - range_start) / match_pattern + 1;
+    // the matches have the form (range_start + i*match_pattern) where i increses for each match
+    u64 sum_invalid_ids = range_start * num_multiples + ((num_multiples - 1) * num_multiples / 2) * match_pattern;
     return sum_invalid_ids;
 }
 
@@ -122,47 +132,29 @@ u64 sum_invalid_id_b_fast(u64 first_id, u64 last_id) {
         if (range_end > last_id)
             range_end = last_id;
         
-        // repeating patterns are always a multiple of 11, 111, 0101, 1111, 11111, 001001, 010101, 111111, etc.
-        // numbers which are a multiple of more than one pattern-number would get counted mutiple times (e.g. 222222 is a multiple of 111111, 010101 and 001001)
-        // solution: get the prime factors of i excluding 1.
-        //              if there is only one, we don't need to worry about double counting
-        //              if there are two prime factors (can only have two for numbers < 20), use these for the mask and subtract the mask of their product
+        // Repeating patterns are always a multiple of 11, 111, 0101, 1111, 11111, 001001, 010101, 111111, etc.
+        // We count all patterns where the number of repeats is a prime factor of the length of the number, as that will cover all other patterns (e.g. 1111 is a mutliple of 0101).
         int first_prime;
         int second_prime;
 
-        for (int j = 2; j <= i; j++) { // j contains the number of times a part of a number is repeated. e.q. 2 is 001001, 3 is 010101 and 6 is 111111
-            if (i % j != 0)
+        foreach (prime; primes) {
+            if (prime > i)
+                break;
+            if (i % prime != 0)
                 continue;
-            bool negate = j == first_prime * second_prime;
-            if (index_of(primes, j) < 0 && !negate)
-                continue;
+            
+            sum_invalid_ids += sum_invalid_id_in_range(range_start, range_end, i, prime);
 
-            u64 match_pattern = 0;
-            for (int k = 0; k < j; k++) {
-                match_pattern = match_pattern * pow(10L, i / j) + 1;
-            }
-
-            // clip range to multiples of the pattern
-            u64 sub_range_start = range_start;
-            if (sub_range_start % match_pattern != 0)
-                sub_range_start += match_pattern - sub_range_start % match_pattern;
-            u64 sub_range_end = range_end - range_end % match_pattern;
-            if (sub_range_end < sub_range_start)
-                continue;
-
-            u64 num_multiples = (sub_range_end - sub_range_start) / match_pattern + 1;
-            u64 sub_sum_invalid_ids = sub_range_start * num_multiples + ((num_multiples - 1) * num_multiples / 2) * match_pattern;
-
-            if (negate)
-                sum_invalid_ids -= sub_sum_invalid_ids;
-            else {
-                sum_invalid_ids += sub_sum_invalid_ids;
-                if (first_prime == 0)
-                    first_prime = j;
-                else
-                    second_prime = j;
-            }
+            if (first_prime == 0)
+                first_prime = prime;
+            else
+                second_prime = prime;
         }
+
+        // Repeat counts which are a multiple of more than one prime factor would get counted mutiple times (e.g. 222222 is a multiple of both pattern 010101 and 001001)
+        // In this case we subtract the numbers that match the pattern whose repeat count is the product of the primes factors (can only have two for all 64-bit intergers).
+        if (second_prime > 0)
+            sum_invalid_ids -= sum_invalid_id_in_range(range_start, range_end, i, first_prime * second_prime);
     }
     
     return sum_invalid_ids;
