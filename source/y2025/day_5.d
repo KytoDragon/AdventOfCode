@@ -3,7 +3,6 @@ module y2025.day_5;
 import util.Basic : free, u64, s64;
 import util.Files : read_entire_file;
 import util.Strings : split_fixed, parse_integer;
-import util.Math : min, max;
 import util.file.FileReader;
 import util.List;
 

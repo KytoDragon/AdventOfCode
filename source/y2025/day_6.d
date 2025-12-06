@@ -1,6 +1,6 @@
 module y2025.day_6;
 
-import util.Basic : free, u64, s64, temporary_allocator, new_array;
+import util.Basic : free, u64, temporary_allocator, new_array;
 import util.Files : read_entire_file;
 import util.Strings : parse_integer, eat_spaces;
 import util.file.FileReader;

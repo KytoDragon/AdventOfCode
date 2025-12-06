@@ -71,7 +71,7 @@ void day_3(string input_file, int expected_result_1, int expected_result_2) {
 
     bool result_1_matched = expected_result_1 == unique_houses_visited;
     bool result_2_matched = expected_result_2 == robo_santa_houses_visited;
-    log_result(2015, 3, input_file, "Number of unique houses visited: %# Number of houses visited with Robo-Santa: %# feet", result_1_matched, unique_houses_visited, result_2_matched, robo_santa_houses_visited);
+    log_result(2015, 3, input_file, "Number of unique houses visited: %#, Number of houses visited with Robo-Santa: %# feet", result_1_matched, unique_houses_visited, result_2_matched, robo_santa_houses_visited);
 }
 
 /*
