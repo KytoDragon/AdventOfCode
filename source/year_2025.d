@@ -6,6 +6,7 @@ import y2025.day_2;
 import y2025.day_3;
 import y2025.day_4;
 import y2025.day_5;
+import y2025.day_6;
 
 nothrow @nogc:
 
@@ -29,4 +30,8 @@ void year_2025() {
     day_5("resources/year_2025/day_5_example.txt", 3, 14);
     day_5("resources/year_2025/day_5_input.txt", 529, 344260049617193);
     print_time(5);
+
+    day_6("resources/year_2025/day_6_example.txt", 4277556, 3263827);
+    day_6("resources/year_2025/day_6_input.txt", 5784380717354, 7996218225744);
+    print_time(6);
 }
