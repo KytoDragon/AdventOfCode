@@ -26,6 +26,8 @@ void log_result(A...)(int year, int day, string file, string format, A a) {
     print("Result for year ", colors[year % 6], year, "\x1b[0m day ", colors[day % 6], day, "\x1b[0m file ");
 
     string filename = get_filename_from_path(file);
+    int index = cast(int)index_of(filename, index_of(filename, '_')+1, '_') + 1;
+    filename = filename[index..$];
     // example files are set to dim/faint
     if (starts_with(filename, "example")) {
         print("\x1b[2m", filename, "\x1b[0m");
