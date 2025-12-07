@@ -83,8 +83,10 @@ void day_6(string input_file, u64 expected_result_1, u64 expected_result_2) {
     
     bool result_1_matched = expected_result_1 == sum_of_horizontal_results;
     bool result_2_matched = expected_result_2 == sum_of_vertical_results;
-    log_result(2025, 6, input_file, "Sum of horizontal results: %#, Sum of vertical results %#", result_1_matched, sum_of_horizontal_results, result_2_matched, sum_of_vertical_results);
+    log_result(2025, 6, input_file, "Sum of horizontal results: %#, Sum of vertical results: %#", result_1_matched, sum_of_horizontal_results, result_2_matched, sum_of_vertical_results);
 }
+
+private:
 
 string pop_operator(string line, int index) {
     int end_of_column = index + 1;
