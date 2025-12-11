@@ -1,6 +1,6 @@
 module y2025.day_8;
 
-import util.Basic : free, new_array;
+import util.Basic : free, new_array, u64;
 import util.Files : read_entire_file;
 import util.Strings : parse_integer, index_of, last_index_of;
 import util.Algorithm : sort;
@@ -33,7 +33,7 @@ void day_8(string input_file, int num_connections, int expected_result_1, int ex
         JunctionBox a = junction_boxes[i];
         for (int j = i + 1; j < junction_boxes.length; j++) {
             JunctionBox b = junction_boxes[j];
-            float distance_squared = (a.x - b.x) * (a.x - b.x) + (a.y - b.y) * (a.y - b.y) + (a.z - b.z) * (a.z - b.z);
+            u64 distance_squared = (a.x - b.x) * cast(u64)(a.x - b.x) + (a.y - b.y) * cast(u64)(a.y - b.y) + (a.z - b.z) * cast(u64)(a.z - b.z);
             connections[connection_index].distance_squared = distance_squared;
             connections[connection_index].i = cast(ushort)i;
             connections[connection_index].j = cast(ushort)j;
@@ -77,13 +77,13 @@ void day_8(string input_file, int num_connections, int expected_result_1, int ex
 
     bool result_1_matched = expected_result_1 == product_of_three_largest_circuits;
     bool result_2_matched = expected_result_2 == distance_to_edge_of_last_connection;
-    log_result(2025, 8, input_file, "Product of three largest circuits: %#, Product of x coordinates of last connection %#", result_1_matched, product_of_three_largest_circuits, result_2_matched, distance_to_edge_of_last_connection);
+    log_result(2025, 8, input_file, "Product of three largest circuits: %#, Product of x coordinates of last connection: %#", result_1_matched, product_of_three_largest_circuits, result_2_matched, distance_to_edge_of_last_connection);
 }
 
 private:
 
 struct JunctionBox {
-    float x=0, y=0, z=0;
+    int x=0, y=0, z=0;
     int networkID;
 }
 
@@ -97,16 +97,12 @@ JunctionBox[] parse_junction_boxes(ubyte[] data) {
 
         long first_comma = index_of(line, ',');
         long second_comma = last_index_of(line, ',');
-        int x, y, z;
-        if (first_comma < 0 || second_comma == first_comma || !parse_integer(line[0..first_comma], &x)
-                || !parse_integer(line[first_comma + 1..second_comma], &y) || !parse_integer(line[second_comma + 1..$], &z))
-            return null;
-        
         JunctionBox box;
         box.networkID = junction_boxes.length;
-        box.x = x;
-        box.y = y;
-        box.z = z;
+        if (first_comma < 0 || second_comma == first_comma || !parse_integer(line[0..first_comma], &box.x)
+                || !parse_integer(line[first_comma + 1..second_comma], &box.y) || !parse_integer(line[second_comma + 1..$], &box.z))
+            return null;
+        
         junction_boxes.add(box);
     }
     return junction_boxes.as_array();
@@ -123,13 +119,13 @@ void solution_brute_force(int num_connections, JunctionBox[] junction_boxes) {
     int product_of_three_largest_circuits;
     int distance_to_edge_of_last_connection;
     
-    float last_closest_distance_squared = 0;
+    int last_closest_distance_squared = 0;
     int last_closest_distance_index = 0;
     int num_networks = cast(int)junction_boxes.length;
     while (num_networks > 1) {
         int network_to_merge_a = -1;
         int network_to_merge_b = -1;
-        float closest_distance_squared = float.max;
+        int closest_distance_squared = int.max;
         int closest_distance_index = last_closest_distance_index;
 
         // find the two closest junctions boxes that we have not already connected
@@ -138,7 +134,7 @@ void solution_brute_force(int num_connections, JunctionBox[] junction_boxes) {
                 JunctionBox a = junction_boxes[i];
                 for (int j = i + 1; j < junction_boxes.length; j++) {
                     JunctionBox b = junction_boxes[j];
-                    float distance_squared = (a.x - b.x) * (a.x - b.x) + (a.y - b.y) * (a.y - b.y) + (a.z - b.z) * (a.z - b.z);
+                    int distance_squared = (a.x - b.x) * (a.x - b.x) + (a.y - b.y) * (a.y - b.y) + (a.z - b.z) * (a.z - b.z);
                     int index = (i << 16) | j;
                     // We need the smallest distance that is larger than the smallest distance found last time.
                     // The index makes shure we visit all connections that have the same distance in order
@@ -160,7 +156,7 @@ void solution_brute_force(int num_connections, JunctionBox[] junction_boxes) {
                 for (int j = i + 1; j < junction_boxes.length; j++) {
                     JunctionBox b = junction_boxes[j];
                     if (a.networkID != b.networkID) {
-                        float distance_squared = (a.x - b.x) * (a.x - b.x) + (a.y - b.y) * (a.y - b.y) + (a.z - b.z) * (a.z - b.z);
+                        int distance_squared = (a.x - b.x) * (a.x - b.x) + (a.y - b.y) * (a.y - b.y) + (a.z - b.z) * (a.z - b.z);
                         if (distance_squared < closest_distance_squared) {
                             int index = (i << 16) | j;
                             closest_distance_index = index;

@@ -66,7 +66,7 @@ void day_7(string input_file, int expected_result_1, u64 expected_result_2) {
     
     bool result_1_matched = expected_result_1 == num_beam_split;
     bool result_2_matched = expected_result_2 == num_beam_timelines;
-    log_result(2025, 7, input_file, "Number of beam splits: %#, Number of timelines %#", result_1_matched, num_beam_split, result_2_matched, num_beam_timelines);
+    log_result(2025, 7, input_file, "Number of beam splits: %#, Number of timelines: %#", result_1_matched, num_beam_split, result_2_matched, num_beam_timelines);
 }
 
 /*
